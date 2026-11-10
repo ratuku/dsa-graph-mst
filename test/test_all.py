@@ -4,6 +4,7 @@ from src.model.Graph import Graph
 from src.model.Graph import Node
 from src.algorithms.shortest_path import dijkstra
 from src.algorithms.minimum_spanning_tree import minimum_spanning_tree
+from src.algorithms.topological_sort import topological_sort
 from src.mapper.GraphMapper import GraphMapper
 
 def get_undirected_weighted_graph() -> Graph:
@@ -59,6 +60,7 @@ def test_minimum_spanning_tree():
     assert(total == 8)
     assert(len(edges) == 5)
 
+""" Test Graph Mapper """
 def test_parses_sample_graph():
     text = "U, W\nA B 1\nA C 2\nB C 1"
     g = GraphMapper.mapp_to_graph_from_console(text)
@@ -71,3 +73,12 @@ def test_bad_header_reports_line():
 def test_weighted_edge_missing_weight():
     with pytest.raises(ValueError, match="Line 2"):
         GraphMapper.mapp_to_graph_from_console("U, W\nA B")
+
+""" Test Topological Sort """
+def test_topological_sort():
+    graph = GraphMapper.mapp_to_graph_from_console("D, UNW\nA B\nB C\nC A\nC D\nD D")
+
+    has_cycle, cycles, _, _ = topological_sort(graph)
+
+    assert has_cycle
+    assert cycles == [["A", "B", "C"], ["D"]]
